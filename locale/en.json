@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "title": "Model monitor",
+    "description": "A page with GPU and CPU load, video memory, temperature, energy, and token usage of the current session."
+  },
+  "panel": "Monitor",
+  "pageTitle": "Model state",
+  "waiting": "Waiting for a request",
+  "generating": "Generating",
+  "measured": "Measured",
+  "unavailable": "Unavailable"
+}

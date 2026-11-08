@@ -1,0 +1,3 @@
+- insert:
+    - id: prirex-monitor
+      name: 'prirex-monitoring-deepseek-harness'

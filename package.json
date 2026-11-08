@@ -1,0 +1,68 @@
+{
+  "name": "prirex-monitoring-deepseek-harness",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PriRex Monitor — панель телеметрии для DeepSeek Harness: загрузка GPU и CPU, VRAM, температура, энергия, скорость генерации, расход токенов и заполнение контекста текущей сессии.",
+  "license": "MIT",
+  "author": {
+    "name": "Prirex",
+    "url": "https://github.com/Prirex"
+  },
+  "homepage": "https://github.com/Prirex/PriRex-Monitoring-DeepSeek-Harness#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prirex/PriRex-Monitoring-DeepSeek-Harness.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Prirex/PriRex-Monitoring-DeepSeek-Harness/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "telemetry",
+    "monitoring",
+    "gpu",
+    "nvidia-smi",
+    "systeminformation",
+    "tokens",
+    "context-window"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/",
+    "icon.svg"
+  ],
+  "scripts": {
+    "build": "node scripts/gen-client.mjs",
+    "smoke": "node scripts/smoke-client.mjs",
+    "check": "npm run build && npm run smoke"
+  },
+  "dependencies": {
+    "systeminformation": "^5.27.6"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  }
+}
