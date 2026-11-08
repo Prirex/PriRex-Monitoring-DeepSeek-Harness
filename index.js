@@ -268,6 +268,37 @@ export function apply(ctx, config) {
     // no session service in this composition; hardware telemetry still works
   }
 
+  // ---------- disk capacity ----------
+  // fsStats()/disksIO() answer null on Windows, so read throughput is unavailable
+  // there; free space comes from fsSize() and works on every platform.
+  let diskSpace = null;
+
+  async function refreshDiskSpace() {
+    try {
+      const parts = await si.fsSize();
+      const list = Array.isArray(parts) ? parts.filter((p) => p && Number.isFinite(p.size)) : [];
+      if (!list.length) return;
+      const system = list.find((p) => /^C:/i.test(String(p.mount || ''))) || list[0];
+      if (system && Number.isFinite(system.size) && Number.isFinite(system.available)) {
+        diskSpace = {
+          mount: system.mount || null,
+          totalGB: system.size / 1073741824,
+          freeGB: system.available / 1073741824,
+        };
+      }
+    } catch {
+      // keep the previous reading
+    }
+  }
+
+  refreshDiskSpace();
+  const diskSpaceTimer = setInterval(refreshDiskSpace, 15_000);
+  try {
+    ctx.effect(() => () => clearInterval(diskSpaceTimer), 'prirex-monitor: disk capacity');
+  } catch {
+    // interval is cleared on process teardown anyway
+  }
+
   // ---------- polling loop ----------
   let lastTick = 0;
   let lastTotal = 0;
@@ -321,7 +352,12 @@ export function apply(ctx, config) {
       }
 
       const diskValue = disk.status === 'fulfilled' ? disk.value : null;
-      snapshot.disk = diskValue ? { readBps: finite(diskValue.rx_sec) } : { readBps: null };
+      snapshot.disk = {
+        readBps: diskValue ? finite(diskValue.rx_sec) : null,
+        freeGB: diskSpace ? diskSpace.freeGB : null,
+        totalGB: diskSpace ? diskSpace.totalGB : null,
+        mount: diskSpace ? diskSpace.mount : null,
+      };
 
       let tin = 0;
       let tout = 0;

@@ -14,6 +14,12 @@
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/Prirex/PriRex-Monitoring-DeepSeek-Harness?style=for-the-badge&color=2ea043"></a>
 </p>
 
+<p align="center">
+  <img src="assets/monitor.png" alt="PriRex Monitor: cards for GPU load, VRAM, temperature, power, PCIe, CPU and disk, a context-fill ring and the recent-requests table">
+</p>
+
+<p align="center"><sub>The page: hardware cards, context ring and the last requests. Hardware numbers are read from the machine; the token rows come from a demo session.</sub></p>
+
 ---
 
 ## English
@@ -34,14 +40,14 @@ the page live without polling.
 
 | Card | Content |
 |---|---|
-| Speed | tokens/second of the running session, derived from the difference between samples |
+| Speed | tokens/s of the session; `0 tok/s` means the model is idle |
 | GPU load | utilization %, with a 40-point sparkline |
 | VRAM | used / total GB |
 | GPU temperature | °C — the sparkline turns warning-colored above the configured threshold |
 | Power | draw / limit, W |
 | PCIe | link generation and width (`Gen4 x16`) |
 | CPU | total load % |
-| Disk read | read throughput, B/s with units |
+| Disk | read throughput (B/s) where the platform reports it; on Windows, which has no byte-rate provider, it shows free space of the system volume |
 
 Below the cards: **energy since host start** (Wh, integrated from GPU power draw), **GPU fan** (%),
 **GPU clock** (MHz), a **context fill** ring (used / window tokens) and a **recent requests** table —
@@ -50,6 +56,22 @@ time, status, model, input tokens, cache-read tokens, output tokens, cache share
 GPU numbers come from `nvidia-smi`, because `systeminformation` does not expose utilization, fan
 speed or PCIe link width on Windows. Without an NVIDIA tool the module falls back to
 `systeminformation`, so AMD/Intel machines still get load, temperature, power and VRAM.
+
+### Why PriRex Monitor
+
+- **Real sensors, not guesses** — `nvidia-smi` reports what the driver knows: utilization, VRAM, fan,
+  power draw against the limit, temperature, SM clock and the PCIe link; every other platform falls
+  back to `systeminformation` instead of showing nothing.
+- **One page instead of three tools** — hardware, the context window and the cost of the current
+  session sit together, so a slow answer can be explained without leaving the chat.
+- **Live, not polled** — samples arrive over SSE every 500 ms; the page falls back to a 2 s poll only
+  if the stream is unavailable.
+- **Zero setup** — no config file to write, no build during installation (`client.js` is committed),
+  no service to run; the plugin samples the machine it is already installed on.
+- **Local by design** — two same-origin `GET` routes, no outbound traffic, no filesystem access, and
+  a `nvidia-smi` call with a fixed argument vector.
+- **Fits the host** — colors come from DSH theme tokens, so the page matches light and dark themes
+  without a second stylesheet.
 
 ### Installation
 
@@ -167,7 +189,7 @@ PriRex Monitor добавляет в боковую панель DSH пункт 
 | Мощность | потребление / лимит, Вт |
 | PCIe | поколение и ширина линии (`Gen4 x16`) |
 | CPU | суммарная загрузка, % |
-| Чтение диска | скорость чтения с единицами измерения |
+| Диск | скорость чтения (Б/с) там, где платформа её отдаёт; на Windows, где провайдера байт/с нет, показывается свободное место системного тома |
 
 Ниже карточек: **энергия с запуска хоста** (Вт·ч, интеграл мощности GPU), **вентилятор GPU** (%),
 **частота GPU** (МГц), кольцо **заполнения контекста** (использовано / окно) и таблица **недавних
@@ -176,6 +198,22 @@ PriRex Monitor добавляет в боковую панель DSH пункт 
 Данные GPU читаются через `nvidia-smi`: `systeminformation` не отдаёт загрузку, обороты вентилятора
 и ширину PCIe. Без NVIDIA-инструмента модуль переходит на `systeminformation`, поэтому на
 AMD/Intel всё равно видны загрузка, температура, мощность и VRAM.
+
+### Преимущества
+
+- **Настоящие датчики, а не оценки** — `nvidia-smi` отдаёт то, что знает драйвер: загрузку, VRAM,
+  вентилятор, потребление к лимиту, температуру, частоту SM и линию PCIe; на остальных платформах
+  работает откат на `systeminformation`, а не пустая карточка.
+- **Одна страница вместо трёх утилит** — железо, окно контекста и стоимость текущей сессии рядом,
+  поэтому медленный ответ объясняется без выхода из чата.
+- **Живые данные, а не опрос** — замеры приходят по SSE каждые 500 мс; опрос раз в 2 с включается
+  только если поток недоступен.
+- **Без настройки** — не нужно писать конфиг, собирать при установке (`client.js` закоммичен) и
+  держать отдельный сервис: плагин читает машину, на которой уже установлен.
+- **Локально по замыслу** — два same-origin `GET`-маршрута, нет исходящего трафика, нет доступа к
+  файловой системе, `nvidia-smi` вызывается с фиксированным набором аргументов.
+- **Под стиль хоста** — цвета берутся из токенов темы DSH, поэтому страница совпадает со светлой и
+  тёмной темой без второго набора стилей.
 
 ### Установка
 

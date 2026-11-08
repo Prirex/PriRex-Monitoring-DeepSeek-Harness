@@ -1,9 +1,9 @@
 {
   "name": "prirex-monitoring-deepseek-harness",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
-  "description": "PriRex Monitor — панель телеметрии для DeepSeek Harness: загрузка GPU и CPU, VRAM, температура, энергия, скорость генерации, расход токенов и заполнение контекста текущей сессии.",
+  "description": "PriRex Monitor вЂ” РїР°РЅРµР»СЊ С‚РµР»РµРјРµС‚СЂРёРё РґР»СЏ DeepSeek Harness: Р·Р°РіСЂСѓР·РєР° GPU Рё CPU, VRAM, С‚РµРјРїРµСЂР°С‚СѓСЂР°, СЌРЅРµСЂРіРёСЏ, СЃРєРѕСЂРѕСЃС‚СЊ РіРµРЅРµСЂР°С†РёРё, СЂР°СЃС…РѕРґ С‚РѕРєРµРЅРѕРІ Рё Р·Р°РїРѕР»РЅРµРЅРёРµ РєРѕРЅС‚РµРєСЃС‚Р° С‚РµРєСѓС‰РµР№ СЃРµСЃСЃРёРё.",
   "license": "MIT",
   "author": {
     "name": "Prirex",
