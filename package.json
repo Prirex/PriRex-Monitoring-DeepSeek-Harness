@@ -1,9 +1,9 @@
 {
   "name": "prirex-monitoring-deepseek-harness",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
-  "description": "PriRex Monitor вЂ” РїР°РЅРµР»СЊ С‚РµР»РµРјРµС‚СЂРёРё РґР»СЏ DeepSeek Harness: Р·Р°РіСЂСѓР·РєР° GPU Рё CPU, VRAM, С‚РµРјРїРµСЂР°С‚СѓСЂР°, СЌРЅРµСЂРіРёСЏ, СЃРєРѕСЂРѕСЃС‚СЊ РіРµРЅРµСЂР°С†РёРё, СЂР°СЃС…РѕРґ С‚РѕРєРµРЅРѕРІ Рё Р·Р°РїРѕР»РЅРµРЅРёРµ РєРѕРЅС‚РµРєСЃС‚Р° С‚РµРєСѓС‰РµР№ СЃРµСЃСЃРёРё.",
+  "description": "PriRex Monitor — telemetry panel for DeepSeek Harness: GPU/CPU load, VRAM, temperature, energy, generation speed, token usage and context fill of the current session.",
   "license": "MIT",
   "author": {
     "name": "Prirex",

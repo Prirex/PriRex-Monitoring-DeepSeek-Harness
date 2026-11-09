@@ -53,6 +53,10 @@ Below the cards: **energy since host start** (Wh, integrated from GPU power draw
 **GPU clock** (MHz), a **context fill** ring (used / window tokens) and a **recent requests** table —
 time, status, model, input tokens, cache-read tokens, output tokens, cache share.
 
+The top-right corner of the page holds a compact **RU / EN / ZH** switch. The page then re-renders
+in that language — titles, card labels, statuses, table headers and number/time formatting — and the
+choice is remembered in the browser's `localStorage`.
+
 GPU numbers come from `nvidia-smi`, because `systeminformation` does not expose utilization, fan
 speed or PCIe link width on Windows. Without an NVIDIA tool the module falls back to
 `systeminformation`, so AMD/Intel machines still get load, temperature, power and VRAM.
@@ -72,6 +76,26 @@ speed or PCIe link width on Windows. Without an NVIDIA tool the module falls bac
   a `nvidia-smi` call with a fixed argument vector.
 - **Fits the host** — colors come from DSH theme tokens, so the page matches light and dark themes
   without a second stylesheet.
+- **Three languages** — the page ships with Russian, English and Chinese; the top-right switch
+  re-renders every label, status and number format without a reload.
+
+### Changelog
+
+#### v1.0.2 — current update
+- **Language switch (RU / EN / ZH)** in the top-right corner of the page; the choice is stored in
+  `localStorage` and applied again on the next launch.
+- The sidebar entry's label follows the saved language on the next host start.
+- Card headers, statuses, the context ring, the requests table and number/time formatting are all
+  localized (decimal separators and clock format follow the locale).
+- Docs: fixed the broken encoding of the package description.
+
+#### v1.0.1
+- The disk card now works on Windows: when the platform has no byte-rate provider it shows free
+  space instead of an empty card.
+- Screenshot and the benefit list added to the docs.
+
+#### v1.0.0
+- Initial release: live hardware and token telemetry over an SSE stream plus a JSON fallback route.
 
 ### Installation
 
@@ -195,6 +219,10 @@ PriRex Monitor добавляет в боковую панель DSH пункт 
 **частота GPU** (МГц), кольцо **заполнения контекста** (использовано / окно) и таблица **недавних
 запросов** — время, статус, модель, ввод, из кэша, вывод, доля кэша.
 
+В правом верхнем углу страницы — компактный переключатель **RU / EN / ZH**. Страница сразу
+перерисовывается на выбранном языке: заголовки, подписи карточек, статусы, шапка таблицы, а также
+формат чисел и времени; выбор сохраняется в `localStorage` браузера.
+
 Данные GPU читаются через `nvidia-smi`: `systeminformation` не отдаёт загрузку, обороты вентилятора
 и ширину PCIe. Без NVIDIA-инструмента модуль переходит на `systeminformation`, поэтому на
 AMD/Intel всё равно видны загрузка, температура, мощность и VRAM.
@@ -214,6 +242,26 @@ AMD/Intel всё равно видны загрузка, температура,
   файловой системе, `nvidia-smi` вызывается с фиксированным набором аргументов.
 - **Под стиль хоста** — цвета берутся из токенов темы DSH, поэтому страница совпадает со светлой и
   тёмной темой без второго набора стилей.
+- **Три языка** — страница говорит на русском, английском и китайском; переключатель справа сверху
+  перерисовывает все подписи, статусы и форматы чисел без перезагрузки.
+
+### Обновления
+
+#### v1.0.2 — текущее обновление
+- **Переключатель языка (RU / EN / ZH)** в правом верхнем углу страницы; выбор сохраняется в
+  `localStorage` и применяется при следующем запуске.
+- Название пункта в боковой панели берётся из сохранённого языка при следующем старте хоста.
+- Локализованы заголовки карточек, статусы, кольцо контекста, таблица запросов, а также формат
+  чисел и времени (разделитель дробной части и формат часов по локали).
+- Документация: исправлена испорченная кодировка описания пакета.
+
+#### v1.0.1
+- Карточка диска теперь работает на Windows: если платформа не отдаёт байты в секунду, показывается
+  свободное место, а не пустая карточка.
+- В документацию добавлены скриншот и список преимуществ.
+
+#### v1.0.0
+- Первый выпуск: живая телеметрия железа и токенов через SSE-поток и JSON-маршрут как запасной путь.
 
 ### Установка
 

@@ -11,8 +11,191 @@ window.__ModuleLoader__.load({
     const POLL_MS = 2000; // fallback interval if the SSE stream is unavailable
     const ROUTE = '/api/prirex-monitor/telemetry';
     const STREAM_ROUTE = '/api/prirex-monitor/stream';
-    const VERSION = 'v1.0.1'; // project version shown on the brand card
+    const VERSION = 'v1.0.2'; // project version shown on the brand card
     const GITHUB_URL = 'https://github.com/Prirex/PriRex-Monitoring-DeepSeek-Harness';
+
+    // ------------------------------------------------------------------ i18n
+    // Every user-facing string lives here; the chosen language is persisted per
+    // browser and applied to the page (the sidebar label is read at startup).
+    const LANG_KEY = 'prirex-monitor:lang';
+    const LANGS = [
+      { id: 'ru', label: 'RU' },
+      { id: 'en', label: 'EN' },
+      { id: 'zh', label: '中文' },
+    ];
+    const I18N = {
+      ru: {
+        panelLabel: 'Монитор',
+        tagMeasured: 'Измерено',
+        tagUnavailable: 'Недоступно',
+        brandHead: 'Версия проекта',
+        brandSub: 'Разработано PriRex',
+        title: 'Состояние модели',
+        badgeActive: 'Генерация',
+        badgeIdle: 'Ожидание',
+        close: 'Закрыть',
+        statusActive: 'Модель генерирует ответ…',
+        statusIdle: 'Ожидание запроса',
+        offline: 'нет связи с телеметрией хоста',
+        updatedAt: 'обновлено в {t}',
+        noData: 'нет данных',
+        speed: 'Скорость',
+        gpuLoad: 'Загрузка GPU',
+        vram: 'VRAM',
+        gpuTemp: 'Темп. GPU',
+        power: 'Мощность',
+        pcie: 'PCIe',
+        cpu: 'CPU',
+        disk: 'Диск',
+        generatingProc: 'Генерация / Обработка',
+        noGen: 'Нет активной генерации',
+        noDataShort: 'Нет данных',
+        gpuMem: 'Память GPU',
+        atLimit: 'на лимите {v} Вт',
+        limitUnknown: 'Лимит неизвестен',
+        pcieUnavailable: 'Данные о передаче на GPU недоступны',
+        readSpeed: 'Скорость чтения',
+        freeOf: 'свободно из {v} ГБ',
+        statEnergy: 'Энергия с запуска',
+        statFan: 'Вентилятор GPU',
+        statClock: 'Частота GPU',
+        ctxTitle: 'Заполнение контекста',
+        ctxEmpty: 'Нет записанных данных об использовании запросов',
+        ctxUsed: 'использовано {u} из {w} токенов',
+        reqTitle: 'Недавние запросы',
+        reqEmpty: 'Запросов пока нет',
+        statusDone: 'Готово',
+        statusInterrupted: 'Прервано',
+        headers: ['Время', 'Статус', 'Запрос', 'Ввод', 'Из кэша', 'Вывод', 'Кэш, %'],
+        err: 'Ошибка страницы монитора:',
+        units: ['Б/с', 'КБ/с', 'МБ/с', 'ГБ/с'],
+        gb: 'ГБ',
+        cores: 'ядер',
+        threads: 'потоков',
+        locale: 'ru-RU',
+        sep: ',',
+      },
+      en: {
+        panelLabel: 'Monitor',
+        tagMeasured: 'Measured',
+        tagUnavailable: 'Unavailable',
+        brandHead: 'Project version',
+        brandSub: 'Developed by PriRex',
+        title: 'Model state',
+        badgeActive: 'Generating',
+        badgeIdle: 'Idle',
+        close: 'Close',
+        statusActive: 'The model is generating a reply…',
+        statusIdle: 'Waiting for a request',
+        offline: 'no connection to host telemetry',
+        updatedAt: 'updated at {t}',
+        noData: 'no data',
+        speed: 'Speed',
+        gpuLoad: 'GPU load',
+        vram: 'VRAM',
+        gpuTemp: 'GPU temp.',
+        power: 'Power',
+        pcie: 'PCIe',
+        cpu: 'CPU',
+        disk: 'Disk',
+        generatingProc: 'Generation / Processing',
+        noGen: 'No active generation',
+        noDataShort: 'No data',
+        gpuMem: 'GPU memory',
+        atLimit: 'at limit {v} W',
+        limitUnknown: 'Limit unknown',
+        pcieUnavailable: 'GPU transfer data unavailable',
+        readSpeed: 'Read speed',
+        freeOf: 'free of {v} GB',
+        statEnergy: 'Energy since start',
+        statFan: 'GPU fan',
+        statClock: 'GPU clock',
+        ctxTitle: 'Context usage',
+        ctxEmpty: 'No request usage recorded yet',
+        ctxUsed: 'used {u} of {w} tokens',
+        reqTitle: 'Recent requests',
+        reqEmpty: 'No requests yet',
+        statusDone: 'Done',
+        statusInterrupted: 'Interrupted',
+        headers: ['Time', 'Status', 'Model', 'Input', 'Cache read', 'Output', 'Cache %'],
+        err: 'Monitor page error:',
+        units: ['B/s', 'KB/s', 'MB/s', 'GB/s'],
+        gb: 'GB',
+        cores: 'cores',
+        threads: 'threads',
+        locale: 'en-US',
+        sep: '.',
+      },
+      zh: {
+        panelLabel: '监控',
+        tagMeasured: '已测量',
+        tagUnavailable: '不可用',
+        brandHead: '项目版本',
+        brandSub: '由 PriRex 开发',
+        title: '模型状态',
+        badgeActive: '生成中',
+        badgeIdle: '空闲',
+        close: '关闭',
+        statusActive: '模型正在生成回复…',
+        statusIdle: '等待请求',
+        offline: '与主机遥测的连接已断开',
+        updatedAt: '更新于 {t}',
+        noData: '暂无数据',
+        speed: '速度',
+        gpuLoad: 'GPU 负载',
+        vram: 'VRAM',
+        gpuTemp: 'GPU 温度',
+        power: '功耗',
+        pcie: 'PCIe',
+        cpu: 'CPU',
+        disk: '磁盘',
+        generatingProc: '生成 / 处理',
+        noGen: '当前没有生成任务',
+        noDataShort: '暂无数据',
+        gpuMem: 'GPU 显存',
+        atLimit: '限额 {v} W',
+        limitUnknown: '限额未知',
+        pcieUnavailable: '无法获取 GPU 传输数据',
+        readSpeed: '读取速度',
+        freeOf: '共 {v} GB 中可用',
+        statEnergy: '启动以来耗电',
+        statFan: 'GPU 风扇',
+        statClock: 'GPU 频率',
+        ctxTitle: '上下文占用',
+        ctxEmpty: '还没有请求用量记录',
+        ctxUsed: '已用 {u} / {w} 个令牌',
+        reqTitle: '最近请求',
+        reqEmpty: '还没有请求',
+        statusDone: '完成',
+        statusInterrupted: '已中断',
+        headers: ['时间', '状态', '请求', '输入', '缓存读取', '输出', '缓存 %'],
+        err: '监控页面出错：',
+        units: ['B/s', 'KB/s', 'MB/s', 'GB/s'],
+        gb: 'GB',
+        cores: '核',
+        threads: '线程',
+        locale: 'zh-CN',
+        sep: '.',
+      },
+    };
+
+    function readSavedLang() {
+      try {
+        const storage = typeof window !== 'undefined' && window.localStorage ? window.localStorage : null;
+        const saved = storage ? storage.getItem(LANG_KEY) : null;
+        if (saved === 'ru' || saved === 'en' || saved === 'zh') return saved;
+        const nav = (typeof navigator !== 'undefined' && navigator.language) || '';
+        if (/^zh/i.test(nav)) return 'zh';
+        if (/^en/i.test(nav)) return 'en';
+      } catch {
+        /* storage may be blocked; the default language still renders */
+      }
+      return 'ru';
+    }
+
+    function tmpl(text, vars) {
+      return text.replace(/\{(\w+)\}/g, (m, k) => (vars[k] === undefined ? m : String(vars[k])));
+    }
     const LOGO_SVG = `<svg viewBox="0 0 512 342">
 <path d="M0 0 C-2.46 7.92 -5.67 15.42 -9 23 C-5.08 20.52 -1.89 18.04 1.25 14.62 C8.51 7.23 17.05 2.82 27 0 C27.99 0 28.98 0 30 0 C28.4 4.14 25.35 6.67 22.19 9.62 C17.07 14.54 13.55 19.29 11 26 C11.78 25.42 11.78 25.42 12.58 24.83 C21.68 18.39 33.59 13.26 45 14 C41.73 17.94 38.42 21.56 34.69 25.06 C23.33 36.32 16.06 50.72 15.94 66.81 C15.58 77.58 11.52 87.48 7.83 97.48 C6.52 101.44 5.89 105.27 5.68 109.43 C5.64 110.22 5.6 111.02 5.56 111.84 C5.52 112.65 5.48 113.47 5.44 114.31 C5.37 115.57 5.37 115.57 5.31 116.85 C5.2 118.9 5.1 120.95 5 123 C5.76 123.2 6.52 123.41 7.3 123.62 C8.29 123.89 9.29 124.16 10.31 124.44 C11.3 124.7 12.28 124.97 13.3 125.25 C15.22 125.78 17.11 126.37 19 127 C19 126.34 19 125.68 19 125 C24.48 125.34 28.01 128.55 32 132 C32.64 132.54 33.27 133.09 33.93 133.65 C40.65 140.25 42.69 149.66 43.22 158.84 C43 162 43 162 41 164 C41.72 164.09 42.45 164.18 43.19 164.27 C66.72 167.27 94.15 171.19 110 191 C114.45 197.33 115.82 203.37 115 211 C112.93 219.66 108.46 224.47 101.12 229.21 C90.2 235.27 77.23 236.19 65 236 C67.01 242.53 68.98 247.75 73.83 252.66 C75 254 75 254 75 256 C75.6 256.25 76.2 256.5 76.81 256.75 C79.29 258.17 80.36 259.69 82 262 C77.33 269.13 72.61 273.17 64.69 276.31 C55.85 277.96 47.86 277.72 40 273 C32.45 266.98 29.67 258.55 28.54 249.21 C28.04 242.47 27.97 235.76 28 229 C27.02 229.63 26.04 230.26 25.03 230.91 C18.09 235.32 11.12 239.62 3.88 243.5 C3.27 243.83 2.67 244.15 2.05 244.49 C-6.31 248.89 -13.61 249.92 -23 249 C-26.86 247.59 -28.71 245.43 -31 242 C-31 235.45 -28.34 231.59 -24 227 C-20.47 223.81 -16.77 220.9 -13 218 C-11.85 217.1 -10.69 216.21 -9.54 215.31 C-5.05 211.84 -0.55 208.4 4 205 C-2.35 204.49 -5.87 204.87 -11 209 C-11.61 209.4 -12.22 209.79 -12.85 210.2 C-16.66 212.68 -18.82 214.4 -20 219 C-21.98 218.01 -21.98 218.01 -24 217 C-24.43 213.38 -24.1 212.15 -22 209.06 C-19.72 205.57 -19.31 204.08 -20 200 C-22.12 196.55 -24.83 194.32 -27.94 191.81 C-31.97 188.41 -33.92 184.84 -35.99 180.04 C-36.83 177.84 -36.83 177.84 -39 177 C-40.76 177.4 -42.51 177.87 -44.25 178.38 C-56.59 181.59 -69.34 181.14 -82 181 C-81.01 180.01 -80.02 179.02 -79 178 C-79.88 177.66 -80.77 177.32 -81.68 176.97 C-90.98 173.21 -100.29 168.76 -107 161 C-107 160.34 -107 159.68 -107 159 C-105.06 159.02 -105.06 159.02 -103.09 159.04 C-101.37 159.04 -99.65 159.05 -97.94 159.06 C-97.09 159.07 -96.24 159.08 -95.37 159.09 C-90.46 159.11 -85.84 158.83 -81 158 C-81.51 157.66 -82.01 157.32 -82.53 156.98 C-83.51 156.31 -83.51 156.31 -84.5 155.62 C-85.47 154.96 -85.47 154.96 -86.47 154.29 C-87.23 153.65 -87.23 153.65 -88 153 C-88 152.34 -88 151.68 -88 151 C-86.92 151.16 -85.83 151.33 -84.72 151.5 C-79.31 152.17 -73.94 152.11 -68.5 152.06 C-66.98 152.06 -66.98 152.06 -65.43 152.05 C-62.95 152.04 -60.48 152.02 -58 152 C-58 151.34 -58 150.68 -58 150 C-58.55 149.83 -59.1 149.67 -59.67 149.5 C-65.31 147.73 -70.36 145.47 -75.5 142.56 C-76.27 142.13 -77.04 141.69 -77.83 141.25 C-91.51 133.39 -103.88 124.19 -115 113 C-115.82 112.18 -116.64 111.36 -117.48 110.52 C-132.88 94.27 -145.35 69.98 -146.12 47.38 C-146.08 46.59 -146.04 45.81 -146 45 C-145.34 45 -144.68 45 -144 45 C-143.4 46.34 -143.4 46.34 -142.79 47.71 C-138.52 56.9 -133.64 65.24 -125 71 C-125.29 69.74 -125.58 68.48 -125.88 67.19 C-129.5 50.75 -129.97 36.44 -126 20 C-125.34 20 -124.68 20 -124 20 C-123.66 21.05 -123.32 22.11 -122.97 23.19 C-120.43 30.84 -117.67 38.19 -113.88 45.31 C-113.55 45.93 -113.23 46.54 -112.89 47.18 C-110.99 50.64 -108.94 53.36 -106 56 C-106.02 55.44 -106.04 54.88 -106.06 54.31 C-106.54 39.69 -105.95 27.2 -99 14 C-98.34 14 -97.68 14 -97 14 C-96.84 15.26 -96.68 16.52 -96.52 17.81 C-93.51 40.4 -87.85 59.47 -69.81 74.75 C-64.13 79.01 -57.58 81.45 -51 84 C-50.85 83.47 -50.71 82.93 -50.56 82.39 C-46.48 67.61 -42.15 54.6 -32.04 42.75 C-29.54 39.37 -27.76 35.84 -25.94 32.06 C-21.33 22.52 -16.03 14.02 -9.31 5.81 C-8.85 5.23 -8.38 4.66 -7.91 4.06 C-4.47 0 -4.47 0 0 0 Z M16.5 157.5 C14 159 14 159 10 159 C9.33 160.43 8.66 161.87 8 163.31 C7.44 164.51 7.44 164.51 6.88 165.74 C5.82 168.06 5.82 168.06 6 171 C5.34 171 4.68 171 4 171 C4.96 178.32 6.8 187.74 11.31 193.75 C13.56 195.42 15.21 195.73 18 196 C20.29 195.02 20.29 195.02 22.39 193.36 C23.18 192.78 23.97 192.21 24.79 191.61 C25.6 191 26.41 190.38 27.25 189.75 C28.08 189.15 28.91 188.55 29.76 187.93 C34.4 184.76 34.4 184.76 37 180 C36.34 179.48 35.68 178.97 35 178.44 C33 176 33 176 32.56 172.44 C33 169 33 169 34.5 167.06 C35.24 166.54 35.24 166.54 36 166 C35.34 166 34.68 166 34 166 C34 164.68 34 163.36 34 162 C33.46 161.73 32.91 161.47 32.36 161.2 C31.64 160.84 30.92 160.49 30.19 160.12 C29.48 159.78 28.77 159.43 28.04 159.07 C26 158 26 158 23 156 C19.09 155.66 19.09 155.66 16.5 157.5 Z M-14 179 C-13.92 179.8 -13.83 180.59 -13.75 181.41 C-13.22 186.88 -13 191.57 -14 197 C-13.34 197.66 -12.68 198.32 -12 199 C-10.01 199.02 -10.01 199.02 -7.88 198.62 C-6.6 198.42 -5.32 198.21 -4 198 C-3.67 197.01 -3.34 196.02 -3 195 C-0.94 193.81 -0.94 193.81 1 193 C-0.44 189.41 -2.11 188 -5.38 186 C-8.69 183.96 -11.33 181.83 -14 179 Z M44 214 C42.64 215.65 41.3 217.31 40 219 C49.89 220.89 60.28 219.72 68.94 214.31 C73.66 210.79 78.34 206.32 81 201 C81.53 195.71 81.53 195.71 79.69 191 C70.83 185.75 50.01 208.12 44 214 Z M-2 197 C2 198 2 198 2 198 Z M6 199 C6.99 199.5 6.99 199.5 8 200 C8 200.66 8 201.32 8 202 C8.66 202 9.32 202 10 202 C9.67 201.01 9.34 200.02 9 199 C8.01 199 7.02 199 6 199 Z " fill="var(--dsw-alias-label-primary)" transform="translate(277,0)"/>
 <path d="M0 0 C7.08 5.96 13.11 12.51 14.24 22.01 C14.49 29.13 12.97 35.55 8.23 41.05 C-3.9 52.23 -20.1 54.25 -36 54 C-33.99 60.53 -32.02 65.75 -27.17 70.66 C-26 72 -26 72 -26 74 C-25.4 74.25 -24.8 74.5 -24.19 74.75 C-21.71 76.17 -20.64 77.69 -19 80 C-23.67 87.13 -28.39 91.17 -36.31 94.31 C-45.15 95.96 -53.14 95.72 -61 91 C-68.55 84.98 -71.33 76.55 -72.46 67.21 C-72.96 60.47 -73.03 53.76 -73 47 C-73.98 47.63 -74.96 48.26 -75.97 48.91 C-82.91 53.32 -89.88 57.62 -97.12 61.5 C-97.73 61.83 -98.33 62.15 -98.95 62.49 C-107.31 66.89 -114.61 67.92 -124 67 C-127.86 65.59 -129.71 63.43 -132 60 C-132 53.45 -129.34 49.59 -125 45 C-121.47 41.81 -117.76 38.9 -114 36 C-112.92 35.15 -111.83 34.3 -110.75 33.45 C-107.53 30.93 -104.27 28.46 -101 26 C-100.04 25.27 -99.08 24.53 -98.09 23.78 C-97.22 23.13 -96.34 22.48 -95.44 21.81 C-94.67 21.24 -93.91 20.67 -93.12 20.08 C-91 19 -91 19 -88.79 19.26 C-87 20 -87 20 -86 21 C-85.5 20.01 -85.5 20.01 -85 19 C-82 20 -82 20 -81 22 C-81.55 18.63 -82.05 16.92 -84 14 C-83.54 13.66 -83.07 13.31 -82.59 12.96 C-80.48 11.39 -78.36 9.82 -76.25 8.25 C-75.52 7.71 -74.79 7.17 -74.04 6.62 C-70.45 3.94 -67.05 1.31 -64 -2 C-64.64 -2.29 -65.28 -2.58 -65.94 -2.88 C-68 -4 -68 -4 -69 -6 C-69.31 -9.44 -69.31 -9.44 -69 -13 C-55.47 -27.5 -12.67 -8.58 0 0 Z M-57 32 C-58.36 33.65 -59.7 35.31 -61 37 C-51.11 38.89 -40.72 37.72 -32.06 32.31 C-27.34 28.79 -22.66 24.32 -20 19 C-19.47 13.71 -19.47 13.71 -21.31 9 C-30.17 3.75 -50.99 26.12 -57 32 Z " fill="#FE0008" transform="translate(378,182)"/>
@@ -30,36 +213,35 @@ window.__ModuleLoader__.load({
     // ------------------------------------------------------------------ helpers
     const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
 
-    function fmtNum(v, digits) {
+    function fmtNum(v, digits, sep) {
       if (!isNum(v)) return '—';
       const d = digits === undefined ? 0 : digits;
-      return v.toFixed(d).replace('.', ',');
+      return v.toFixed(d).replace('.', sep === undefined ? ',' : sep);
     }
 
-    function fmtBps(v) {
+    function fmtBps(v, units, sep) {
       if (!isNum(v) || v <= 0) return '—';
-      const units = ['Б/с', 'КБ/с', 'МБ/с', 'ГБ/с'];
       let n = v;
       let i = 0;
       while (n >= 1024 && i < units.length - 1) {
         n /= 1024;
         i += 1;
       }
-      return (i === 0 ? Math.round(n) : n.toFixed(1).replace('.', ',')) + ' ' + units[i];
+      return (i === 0 ? Math.round(n) : n.toFixed(1).replace('.', sep === undefined ? ',' : sep)) + ' ' + units[i];
     }
 
-    function fmtTime(ms) {
+    function fmtTime(ms, locale) {
       try {
-        return new Date(ms).toLocaleTimeString('ru-RU', { hour12: false });
+        return new Date(ms).toLocaleTimeString(locale || 'ru-RU', { hour12: false });
       } catch {
         return '—';
       }
     }
 
-    function fmtTokens(v) {
+    function fmtTokens(v, sep) {
       if (!isNum(v)) return '—';
-      if (v >= 1e6) return (v / 1e6).toFixed(2).replace('.', ',') + 'M';
-      if (v >= 1e3) return (v / 1e3).toFixed(1).replace('.', ',') + 'K';
+      if (v >= 1e6) return (v / 1e6).toFixed(2).replace('.', sep === undefined ? ',' : sep) + 'M';
+      if (v >= 1e3) return (v / 1e3).toFixed(1).replace('.', sep === undefined ? ',' : sep) + 'K';
       return String(Math.round(v));
     }
 
@@ -214,9 +396,9 @@ window.__ModuleLoader__.load({
     }
 
     // -------------------------------------------------------------- metric card
-    function MetricCard({ kind, label, value, sub, measured, spark, warn }) {
+    function MetricCard({ kind, label, value, sub, measured, spark, warn, tag }) {
       return e('div', { className: 'pm-card' }, [
-        e('div', { key: 't', className: 'pm-card-tag' }, measured ? 'Измерено' : 'Недоступно'),
+        e('div', { key: 't', className: 'pm-card-tag' }, tag),
         e('div', { key: 'h', className: 'pm-card-head' }, [
           e(CardIcon, { key: 'i', kind }),
           e('span', { key: 'l' }, label),
@@ -230,18 +412,39 @@ window.__ModuleLoader__.load({
     }
 
     // -------------------------------------------------------------- brand card
-    function BrandCard() {
+    function BrandCard({ head, sub }) {
       return e('div', { className: 'pm-card pm-brand' }, [
         e('div', { key: 'h', className: 'pm-card-head' }, [
           e(CardIcon, { key: 'i', kind: 'brand' }),
-          e('span', { key: 'l' }, 'Версия проекта'),
+          e('span', { key: 'l' }, head),
         ]),
         e('div', { key: 'v', className: 'pm-card-value pm-version' }, VERSION),
-        e('div', { key: 's', className: 'pm-card-sub' }, 'Разработано PriRex'),
+        e('div', { key: 's', className: 'pm-card-sub' }, sub),
         e('a', { key: 'logo', className: 'pm-logo', href: GITHUB_URL, target: '_blank', rel: 'noopener noreferrer' }, [
           e('span', { key: 's', dangerouslySetInnerHTML: { __html: LOGO_SVG } }),
         ]),
       ]);
+    }
+
+    // ---------------------------------------------------------- language switch
+    function LangSwitcher({ lang, onChange }) {
+      return e(
+        'div',
+        { className: 'pm-lang', role: 'group', 'aria-label': 'Language' },
+        LANGS.map((item) =>
+          e(
+            'button',
+            {
+              key: item.id,
+              type: 'button',
+              className: 'pm-lang-btn' + (item.id === lang ? ' pm-lang-on' : ''),
+              'aria-pressed': item.id === lang,
+              onClick: () => onChange(item.id),
+            },
+            item.label,
+          ),
+        ),
+      );
     }
 
     // -------------------------------------------------------------- telemetry hook
@@ -329,6 +532,11 @@ window.__ModuleLoader__.load({
 .pm-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
 .pm-close { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin-left: auto; padding: 0; border: none; border-radius: 6px; background: transparent; color: var(--dsw-alias-label-secondary); font-size: 18px; line-height: 1; cursor: pointer; }
 .pm-close:hover { background: color-mix(in srgb, var(--dsw-alias-label-secondary) 12%, transparent); color: var(--dsw-alias-label-primary); }
+.pm-head-right { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
+.pm-lang { display: inline-flex; align-items: center; gap: 2px; height: 26px; padding: 2px; border: 1px solid var(--dsw-alias-border-l1); border-radius: 8px; background: var(--dsw-alias-bg-layer-1); }
+.pm-lang-btn { height: 20px; padding: 0 8px; border: none; border-radius: 6px; background: transparent; color: var(--dsw-alias-label-secondary); font: inherit; font-size: 11px; font-weight: 600; line-height: 1; cursor: pointer; }
+.pm-lang-btn:hover { color: var(--dsw-alias-label-primary); background: color-mix(in srgb, var(--dsw-alias-label-secondary) 10%, transparent); }
+.pm-lang-btn.pm-lang-on { background: var(--dsw-alias-bg-base); color: var(--dsw-alias-label-primary); box-shadow: inset 0 0 0 1px var(--dsw-alias-border-l1); }
 .pm-status-card { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 46px; margin-bottom: 14px; padding: 12px 18px; border: 1px solid var(--dsw-alias-border-l1); border-radius: 12px; background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-secondary); }
 .pm-status-text { color: var(--dsw-alias-label-primary); font-size: 13px; }
 .pm-status-meta { font-size: 11.5px; color: var(--dsw-alias-label-secondary); white-space: nowrap; opacity: 0.9; }
@@ -371,19 +579,26 @@ window.__ModuleLoader__.load({
     // ------------------------------------------------------------------- page
     const EMPTY_HISTORY = { gpu: [], cpu: [], power: [], temp: [], disk: [], speed: [] };
 
-    const HEADERS = [
-      'Время',
-      'Статус',
-      'Запрос',
-      'Ввод',
-      'Из кэша',
-      'Вывод',
-      'Кэш, %',
-    ];
-
     function MonitorPage(props) {
       const { data, offline } = useTelemetry();
       const [history, setHistory] = React.useState(EMPTY_HISTORY);
+      const [lang, setLang] = React.useState(readSavedLang);
+
+      const L = I18N[lang] || I18N.ru;
+      const fNum = (v, d) => fmtNum(v, d, L.sep);
+      const fBps = (v) => fmtBps(v, L.units, L.sep);
+      const fTime = (ms) => fmtTime(ms, L.locale);
+      const fTok = (v) => fmtTokens(v, L.sep);
+
+      const changeLang = (next) => {
+        if (!I18N[next] || next === lang) return;
+        setLang(next);
+        try {
+          if (typeof window !== 'undefined' && window.localStorage) window.localStorage.setItem(LANG_KEY, next);
+        } catch {
+          /* persistence is best-effort */
+        }
+      };
 
       const running = !!(data && data.running);
 
@@ -421,45 +636,49 @@ window.__ModuleLoader__.load({
       const gpuName = typeof gpu.name === 'string' && gpu.name ? gpu.name : 'GPU';
       const vramValue =
         isNum(gpu.memUsedGB) && isNum(gpu.memTotalGB)
-          ? fmtNum(gpu.memUsedGB, 1) + ' / ' + fmtNum(gpu.memTotalGB, 0) + ' GB'
+          ? fNum(gpu.memUsedGB, 1) + ' / ' + fNum(gpu.memTotalGB, 0) + ' GB'
           : '—';
-      const cpuName = [cpu.name, isNum(cpu.cores) ? cpu.cores + ' cores' : null, isNum(cpu.threads) ? cpu.threads + ' threads' : null]
+      const cpuName = [
+        cpu.name,
+        isNum(cpu.cores) ? cpu.cores + ' ' + L.cores : null,
+        isNum(cpu.threads) ? cpu.threads + ' ' + L.threads : null,
+      ]
         .filter(Boolean)
         .join(' · ');
 
       const cards = [
         {
           kind: 'speed',
-          label: 'Скорость',
-          value: isNum(data && data.speedTps) ? fmtNum(data.speedTps) + ' tok/s' : '—',
+          label: L.speed,
+          value: isNum(data && data.speedTps) ? fNum(data.speedTps) + ' tok/s' : '—',
           sub: isNum(data && data.speedTps)
             ? data.speedTps > 0
-              ? 'Генерация / Обработка'
-              : 'Нет активной генерации'
-            : 'Нет данных',
+              ? L.generatingProc
+              : L.noGen
+            : L.noDataShort,
           measured: isNum(data && data.speedTps),
           spark: history.speed,
         },
         {
           kind: 'gpu',
-          label: 'Загрузка GPU',
-          value: isNum(gpu.util) ? fmtNum(gpu.util) + '%' : '—',
+          label: L.gpuLoad,
+          value: isNum(gpu.util) ? fNum(gpu.util) + '%' : '—',
           sub: gpuName,
           measured: isNum(gpu.util),
           spark: history.gpu,
         },
         {
           kind: 'vram',
-          label: 'VRAM',
+          label: L.vram,
           value: vramValue,
-          sub: 'Память GPU',
+          sub: L.gpuMem,
           measured: isNum(gpu.memUsedGB) && isNum(gpu.memTotalGB),
           spark: [],
         },
         {
           kind: 'temp',
-          label: 'Темп. GPU',
-          value: isNum(gpu.tempC) ? fmtNum(gpu.tempC) + ' °C' : '—',
+          label: L.gpuTemp,
+          value: isNum(gpu.tempC) ? fNum(gpu.tempC) + ' °C' : '—',
           sub: gpuName,
           measured: isNum(gpu.tempC),
           spark: history.temp,
@@ -467,86 +686,89 @@ window.__ModuleLoader__.load({
         },
         {
           kind: 'power',
-          label: 'Мощность',
-          value: isNum(gpu.powerW) ? fmtNum(gpu.powerW) + ' W' : '—',
-          sub: isNum(gpu.powerLimitW) ? 'на лимите ' + fmtNum(gpu.powerLimitW) + ' Вт' : 'Лимит неизвестен',
+          label: L.power,
+          value: isNum(gpu.powerW) ? fNum(gpu.powerW) + ' W' : '—',
+          sub: isNum(gpu.powerLimitW) ? tmpl(L.atLimit, { v: fNum(gpu.powerLimitW) }) : L.limitUnknown,
           measured: isNum(gpu.powerW),
           spark: history.power,
         },
         {
           kind: 'pcie',
-          label: 'PCIe',
+          label: L.pcie,
           value: typeof gpu.pcie === 'string' && gpu.pcie ? gpu.pcie : '—',
-          sub: 'Данные о передаче на GPU недоступны',
+          sub: L.pcieUnavailable,
           measured: typeof gpu.pcie === 'string' && !!gpu.pcie,
           spark: [],
         },
         {
           kind: 'cpu',
-          label: 'CPU',
-          value: isNum(cpu.usage) ? fmtNum(cpu.usage) + '%' : '—',
+          label: L.cpu,
+          value: isNum(cpu.usage) ? fNum(cpu.usage) + '%' : '—',
           sub: cpuName || 'CPU',
           measured: isNum(cpu.usage),
           spark: history.cpu,
         },
         {
           kind: 'disk',
-          label: 'Диск',
-          value: hasDiskRate ? fmtBps(disk.readBps) : hasDiskSpace ? fmtNum(disk.freeGB) + ' ГБ' : '—',
+          label: L.disk,
+          value: hasDiskRate ? fBps(disk.readBps) : hasDiskSpace ? fNum(disk.freeGB) + ' ' + L.gb : '—',
           sub: hasDiskRate
-            ? 'Скорость чтения'
+            ? L.readSpeed
             : hasDiskSpace
-              ? 'свободно из ' + fmtNum(disk.totalGB) + ' ГБ'
-              : 'Нет данных',
+              ? tmpl(L.freeOf, { v: fNum(disk.totalGB) })
+              : L.noDataShort,
           measured: hasDiskRate || hasDiskSpace,
           spark: hasDiskRate ? history.disk : [],
         },
       ];
 
       const stats = [
-        { label: 'Энергия с запуска', value: isNum(data && data.energyWh) ? fmtNum(data.energyWh, 1) + ' Wh' : '—' },
-        { label: 'Вентилятор GPU', value: isNum(gpu.fanPct) ? fmtNum(gpu.fanPct) + '%' : '—' },
-        { label: 'Частота GPU', value: isNum(gpu.clockMHz) ? fmtNum(gpu.clockMHz) + ' MHz' : '—' },
+        { label: L.statEnergy, value: isNum(data && data.energyWh) ? fNum(data.energyWh, 1) + ' Wh' : '—' },
+        { label: L.statFan, value: isNum(gpu.fanPct) ? fNum(gpu.fanPct) + '%' : '—' },
+        { label: L.statClock, value: isNum(gpu.clockMHz) ? fNum(gpu.clockMHz) + ' MHz' : '—' },
       ];
 
       return e('div', { className: 'pm-page' }, [
         e('style', { key: 'css' }, CSS),
 
         e('div', { key: 'head', className: 'pm-head' }, [
-          e('h1', { key: 't', className: 'pm-title' }, 'Состояние модели'),
+          e('h1', { key: 't', className: 'pm-title' }, L.title),
           e(
             'span',
             { key: 'b', className: 'pm-badge' + (running ? '' : ' pm-badge-idle') },
-            [e('span', { key: 'd', className: 'pm-dot' }), running ? 'Генерация' : 'Ожидание'],
+            [e('span', { key: 'd', className: 'pm-dot' }), running ? L.badgeActive : L.badgeIdle],
           ),
-          closePanel
-            ? e(
-                'button',
-                {
-                  key: 'x',
-                  type: 'button',
-                  className: 'pm-close',
-                  'aria-label': 'Закрыть',
-                  title: 'Закрыть',
-                  onClick: () => {
-                    try {
-                      closePanel();
-                    } catch {
-                      /* the panel service may be gone during teardown */
-                    }
+          e('div', { key: 'right', className: 'pm-head-right' }, [
+            e(LangSwitcher, { key: 'lang', lang, onChange: changeLang }),
+            closePanel
+              ? e(
+                  'button',
+                  {
+                    key: 'x',
+                    type: 'button',
+                    className: 'pm-close',
+                    'aria-label': L.close,
+                    title: L.close,
+                    onClick: () => {
+                      try {
+                        closePanel();
+                      } catch {
+                        /* the panel service may be gone during teardown */
+                      }
+                    },
                   },
-                },
-                '×',
-              )
-            : null,
+                  '×',
+                )
+              : null,
+          ]),
         ]),
 
         e('div', { key: 'status', className: 'pm-status-card' }, [
-          e('span', { key: 's', className: 'pm-status-text' }, running ? 'Модель генерирует ответ…' : 'Ожидание запроса'),
+          e('span', { key: 's', className: 'pm-status-text' }, running ? L.statusActive : L.statusIdle),
           e(
             'span',
             { key: 'm', className: 'pm-status-meta' },
-            offline ? 'нет связи с телефометрией хоста' : data && data.ts ? 'обновлено в ' + fmtTime(data.ts) : 'нет данных',
+            offline ? L.offline : data && data.ts ? tmpl(L.updatedAt, { t: fTime(data.ts) }) : L.noData,
           ),
         ]),
 
@@ -564,9 +786,10 @@ window.__ModuleLoader__.load({
                 measured: card.measured,
                 spark: card.spark,
                 warn: card.warn,
+                tag: card.measured ? L.tagMeasured : L.tagUnavailable,
               }),
             ),
-            e(BrandCard, { key: 'brand' }),
+            e(BrandCard, { key: 'brand', head: L.brandHead, sub: L.brandSub }),
           ],
         ),
 
@@ -583,7 +806,7 @@ window.__ModuleLoader__.load({
 
         e('div', { key: 'foot', className: 'pm-foot' }, [
           e('div', { key: 'ctx', className: 'pm-panel' }, [
-            e('h2', { key: 't', className: 'pm-panel-title' }, 'Заполнение контекста'),
+            e('h2', { key: 't', className: 'pm-panel-title' }, L.ctxTitle),
             e('div', { key: 'r', className: 'pm-ring-wrap' }, [
               e(
                 'div',
@@ -602,13 +825,15 @@ window.__ModuleLoader__.load({
               e(
                 'p',
                 { key: 'n', className: 'pm-note' },
-                contextPct === null ? 'Нет записанных данных об использовании запросов' : 'использовано ' + fmtTokens(context.used) + ' из ' + fmtTokens(context.window) + ' токенов',
+                contextPct === null
+                  ? L.ctxEmpty
+                  : tmpl(L.ctxUsed, { u: fTok(context.used), w: fTok(context.window) }),
               ),
             ]),
           ]),
 
           e('div', { key: 'req', className: 'pm-panel' }, [
-            e('h2', { key: 't', className: 'pm-panel-title' }, 'Недавние запросы'),
+            e('h2', { key: 't', className: 'pm-panel-title' }, L.reqTitle),
             e('div', { key: 'w', className: 'pm-table-wrap' }, [
               e('table', { key: 'table', className: 'pm-table' }, [
                 e(
@@ -617,7 +842,7 @@ window.__ModuleLoader__.load({
                   e(
                     'tr',
                     null,
-                    HEADERS.map((h, i) => e('th', { key: i }, h)),
+                    L.headers.map((h, i) => e('th', { key: i }, h)),
                   ),
                 ),
                 e(
@@ -625,16 +850,16 @@ window.__ModuleLoader__.load({
                   { key: 'b' },
                   recent.length === 0
                     ? e('tr', { className: 'pm-empty-row' }, [
-                        e('td', { key: 'e', colSpan: HEADERS.length }, 'Запросов пока нет'),
+                        e('td', { key: 'e', colSpan: L.headers.length }, L.reqEmpty),
                       ])
                     : recent.map((row, i) =>
                         e('tr', { key: i }, [
-                          e('td', { key: 't' }, fmtTime(row.time)),
-                          e('td', { key: 's' }, row.status === 'interrupted' ? 'Прервано' : 'Готово'),
+                          e('td', { key: 't' }, fTime(row.time)),
+                          e('td', { key: 's' }, row.status === 'interrupted' ? L.statusInterrupted : L.statusDone),
                           e('td', { key: 'm' }, row.model || '—'),
-                          e('td', { key: 'i' }, isNum(row.input) ? fmtTokens(row.input) : '—'),
-                          e('td', { key: 'r' }, isNum(row.cacheRead) && row.cacheRead > 0 ? fmtTokens(row.cacheRead) : '—'),
-                          e('td', { key: 'o' }, isNum(row.output) ? fmtTokens(row.output) : '—'),
+                          e('td', { key: 'i' }, isNum(row.input) ? fTok(row.input) : '—'),
+                          e('td', { key: 'r' }, isNum(row.cacheRead) && row.cacheRead > 0 ? fTok(row.cacheRead) : '—'),
+                          e('td', { key: 'o' }, isNum(row.output) ? fTok(row.output) : '—'),
                           e('td', { key: 'c' }, isNum(row.cacheRead) && isNum(row.input) && row.input > 0
                             ? Math.round((row.cacheRead / row.input) * 100) + '%'
                             : '—'),
@@ -672,12 +897,13 @@ window.__ModuleLoader__.load({
 
       render() {
         if (this.state.error) {
+          const L = I18N[readSavedLang()] || I18N.ru;
           return e('div', { className: 'pm-page' }, [
             e('style', { key: 'css' }, CSS),
             e(
               'div',
               { key: 'err', className: 'pm-error' },
-              'Ошибка страницы монитора:\n' +
+              L.err + '\n' +
                 String((this.state.error && this.state.error.stack) || this.state.error),
             ),
           ]);
@@ -701,7 +927,12 @@ window.__ModuleLoader__.load({
 
         ctx.slots.inject('sidebar.panellist', () =>
           ctx.slots.register(
-            { name: 'sidebar.panellist', id: 'prirex-monitor', order: 20, label: 'Монитор' },
+            {
+              name: 'sidebar.panellist',
+              id: 'prirex-monitor',
+              order: 20,
+              label: (I18N[readSavedLang()] || I18N.ru).panelLabel,
+            },
             PanelIcon,
           ),
         );
