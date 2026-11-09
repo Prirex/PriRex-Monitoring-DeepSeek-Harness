@@ -166,7 +166,7 @@ client.js              built artifact — committed, edit the template instead
 scripts/gen-client.mjs build step: template -> client.js
 scripts/smoke-client.mjs  evaluates client.js in a stubbed loader
 cordis.patch.yml       loader patch that inserts the plugin row
-locale/                panel metadata (ru, en)
+locale/                panel metadata (ru, en, zh)
 icon.svg               sidebar and page icon
 ```
 
@@ -331,7 +331,7 @@ client.js              собранный артефакт — закоммич�
 scripts/gen-client.mjs шаг сборки: шаблон -> client.js
 scripts/smoke-client.mjs  прогоняет client.js в заглушке загрузчика
 cordis.patch.yml       патч загрузчика, вставляющий строку плагина
-locale/                метаданные панели (ru, en)
+locale/                метаданные панели (ru, en, zh)
 icon.svg               иконка для панели и страницы
 ```
 
